@@ -37,6 +37,7 @@ import { usePaginationStore } from '../stores/pagination.js';
 import { useRoute, useRouter } from 'vue-router';
 import {computed, onBeforeUnmount, onMounted} from 'vue';
 import { replaceQuery } from '../helpers.js';
+import {useSearchStore} from "../stores/search";
 
 const props = defineProps({
   loading: {
@@ -52,10 +53,13 @@ const props = defineProps({
 const paginationStore = usePaginationStore();
 const router = useRouter();
 const route = useRoute();
+const searchStore = useSearchStore();
+
 
 const currentPage = computed(() => Number(route.query.page) || 1);
 
 const gotoPage = (page) => {
+  searchStore.canSearchInPlace = true;
   if (page < 1) {
     page = 1;
   }
@@ -64,7 +68,7 @@ const gotoPage = (page) => {
     page = paginationStore.pagination.last_page;
   }
 
-  replaceQuery(router, 'page', page > 1 ? Number(page) : null);
+  replaceQuery(router, 'page', page > 1 ? Number(page) : null,searchStore.canSearchInPlace);
 }
 
 const nextPage = () => gotoPage(paginationStore.page + 1);

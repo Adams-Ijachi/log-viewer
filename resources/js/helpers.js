@@ -51,7 +51,7 @@ export const copyToClipboard = (str) => {
   }
 };
 
-export const replaceQuery = (router, key, value) => {
+export const replaceQuery = (router, key, value,canSearchInPlace=false) => {
   const route = router.currentRoute.value;
   const query = {
     host: route.query.host || undefined,
@@ -70,7 +70,9 @@ export const replaceQuery = (router, key, value) => {
   }
 
   query[key] = value ? String(value) : undefined;
-
+  if (canSearchInPlace){
+    query['query'] = undefined
+  }
   router.push({ name: 'home', query });
 };
 

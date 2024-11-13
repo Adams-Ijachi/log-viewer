@@ -7,6 +7,7 @@
         <div>{{ column.label }}</div>
       </th>
       <th scope="col" class="hidden lg:table-cell"><span class="sr-only">Log index</span></th>
+      <th v-if="logViewerStore.logs.length == 1" scope="col" class="hidden lg:table-cell"><span class="sr-only">Log index</span></th>
     </tr>
     </thead>
 
@@ -68,6 +69,12 @@
         <td class="whitespace-nowrap text-gray-500 dark:text-gray-300 dark:opacity-90 text-xs hidden lg:table-cell">
           <LogCopyButton :log="log" class="pr-2 large-screen" />
         </td>
+        <td v-if="logViewerStore.logs.length == 1" class="whitespace-nowrap text-gray-500 dark:text-gray-300 dark:opacity-90 text-xs hidden lg:table-cell">
+          <button  @click.stop.prevent="searchInPlace()">
+            <span class="text-green-600 dark:text-green-500 hidden md:inline">Search From Here</span>
+          </button>
+        </td>
+
       </tr>
       <tr v-show="logViewerStore.isOpen(index)">
         <td :colspan="tableColumns">
@@ -138,20 +145,22 @@ import {
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  InformationCircleIcon,
+  InformationCircleIcon, HandThumbUpIcon,
 } from '@heroicons/vue/24/solid';
-import { highlightSearchResult } from '../helpers.js';
+import {highlightSearchResult, replaceQuery} from '../helpers.js';
 import { useLogViewerStore } from '../stores/logViewer.js';
 import { useSearchStore } from '../stores/search.js';
 import { useFileStore } from '../stores/files.js';
 import LogCopyButton from './LogCopyButton.vue';
-import { handleLogToggleKeyboardNavigation } from '../keyboardNavigation';
+import {handleLogLinkKeyboardNavigation, handleLogToggleKeyboardNavigation} from '../keyboardNavigation';
 import { useSeverityStore } from '../stores/severity.js';
 import TabContainer from "./TabContainer.vue";
 import TabContent from "./TabContent.vue";
 import MailHtmlPreview from "./MailHtmlPreview.vue";
 import MailTextPreview from "./MailTextPreview.vue";
-import {computed} from "vue";
+import {computed, watch} from "vue";
+import {LinkIcon} from "@heroicons/vue/24/outline";
+import {useRoute, useRouter} from "vue-router";
 
 const fileStore = useFileStore();
 const logViewerStore = useLogViewerStore();
@@ -211,8 +220,13 @@ const prepareContextForOutput = (context) => {
   }, 2);
 }
 
+const searchInPlace = () => {
+  searchStore.canSearchInPlace = true;
+  logViewerStore.loadLogs()
+}
+
 const tableColumns = computed(() => {
   // the extra two columns are for the expand/collapse and log index columns
-  return logViewerStore.columns.length + 2;
+  return logViewerStore.columns.length + 3;
 });
 </script>

@@ -204,6 +204,7 @@ export const useLogViewerStore = defineStore({
         exclude_levels: toRaw(severityStore.excludedLevels),
         exclude_file_types: toRaw(fileStore.fileTypesExcluded),
         shorter_stack_traces: this.shorterStackTraces,
+        searchInPlace:searchStore.canSearchInPlace
       };
 
       if (!silently) {
@@ -229,6 +230,7 @@ export const useLogViewerStore = defineStore({
           this.performance = data.performance || {};
           severityStore.setLevelCounts(data.levelCounts);
           paginationStore.setPagination(data.pagination);
+          searchStore.canSearchInPlace = false;
 
           this.loading = false;
 

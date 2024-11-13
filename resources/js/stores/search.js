@@ -10,6 +10,7 @@ export const useSearchStore = defineStore({
     searching: false,
     percentScanned: 0,
     error: null,
+    canSearchInPlace:false,
   }),
 
   getters: {

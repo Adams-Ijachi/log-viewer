@@ -28,6 +28,15 @@ class LogsController
         session()->put('log-viewer:shorter-stack-traces', $request->boolean('shorter_stack_traces', false));
         $hasMoreResults = false;
         $percentScanned = 0;
+        $searchInPlace = $request->query('searchInPlace') == "true";
+
+        // I need to get the index , determine the page it might be on
+        if (! empty($query) && str_starts_with($query, 'log-index:') && $searchInPlace  ) {
+            $index = (int)explode(':', $query)[1];
+            $page = (int)ceil($index / $perPage);
+            $request->replace(['page' => $page,'query' => '']);
+            $query = '';
+        }
 
         if ($request->query('page', 1) < 1) {
             $request->replace(['page' => 1]);
